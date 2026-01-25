@@ -1,23 +1,25 @@
 --[[
-	JUJU DO PIX HUB - V42 + KEY SYSTEM + DRAG SYSTEM
-	KEY: JJHUB2026
+	JUJU DO PIX HUB - V42 (FULL RESTORED + KEY SYSTEM)
+	- KEY: JJHUB2026
+	- DRAG: Ativado na UI e na Bolinha
+	- FIX: Wall Hop funcional
 ]]
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local Lighting = game:GetService("Lighting")
 
 -------------------------------------------------------------------------
--- FUNÇÃO DE ARRASTAR (DRAG SYSTEM)
+-- FUNÇÃO DE ARRASTAR (DRAG)
 -------------------------------------------------------------------------
 local function MakeDraggable(gui)
     local dragging, dragInput, dragStart, startPos
     gui.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = true
-            dragStart = input.Position
-            startPos = gui.Position
+            dragging = true; dragStart = input.Position; startPos = gui.Position
             input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then dragging = false end
             end)
@@ -37,52 +39,69 @@ local function MakeDraggable(gui)
 end
 
 -------------------------------------------------------------------------
--- INTERFACE DA KEY
+-- INTERFACE DE KEY (FADE IN)
 -------------------------------------------------------------------------
 local KeyGui = Instance.new("ScreenGui", player.PlayerGui)
 KeyGui.Name = "JujuKeySystem"
 
 local BG = Instance.new("Frame", KeyGui); BG.Size = UDim2.new(1, 0, 1, 0); BG.BackgroundColor3 = Color3.fromRGB(5, 5, 5); BG.BackgroundTransparency = 1
-local MainKey = Instance.new("Frame", BG); MainKey.Size = UDim2.new(0, 320, 0, 190); MainKey.Position = UDim2.new(0.5, -160, 0.5, -95); MainKey.BackgroundColor3 = Color3.fromRGB(15, 15, 18); MainKey.BackgroundTransparency = 1; Instance.new("UICorner", MainKey); local StrokeK = Instance.new("UIStroke", MainKey); StrokeK.Color = Color3.fromRGB(0, 255, 150); StrokeK.Thickness = 2; StrokeK.Transparency = 1
-local TitleK = Instance.new("TextLabel", MainKey); TitleK.Size = UDim2.new(1, 0, 0, 60); TitleK.Text = "JUJU DO PIX HUB V42"; TitleK.TextColor3 = Color3.fromRGB(0, 255, 150); TitleK.Font = "GothamBlack"; TitleK.TextSize = 20; TitleK.BackgroundTransparency = 1; TitleK.TextTransparency = 1
-local Box = Instance.new("TextBox", MainKey); Box.Size = UDim2.new(0.85, 0, 0, 45); Box.Position = UDim2.new(0.075, 0, 0.35, 0); Box.PlaceholderText = "DIGITE A KEY..."; Box.Text = ""; Box.BackgroundColor3 = Color3.fromRGB(25, 25, 30); Box.TextColor3 = Color3.new(1, 1, 1); Box.Font = "GothamBold"; Box.TextSize = 14; Box.TextTransparency = 1; Box.BackgroundTransparency = 1; Instance.new("UICorner", Box)
-local Verify = Instance.new("TextButton", MainKey); Verify.Size = UDim2.new(0.85, 0, 0, 45); Verify.Position = UDim2.new(0.075, 0, 0.65, 0); Verify.Text = "ATIVAR SCRIPT"; Verify.BackgroundColor3 = Color3.fromRGB(0, 255, 150); Verify.TextColor3 = Color3.fromRGB(10, 10, 10); Verify.Font = "GothamBlack"; Verify.TextSize = 14; Verify.TextTransparency = 1; Verify.BackgroundTransparency = 1; Instance.new("UICorner", Verify)
+local MainK = Instance.new("Frame", BG); MainK.Size = UDim2.new(0, 320, 0, 190); MainK.Position = UDim2.new(0.5, -160, 0.5, -95); MainK.BackgroundColor3 = Color3.fromRGB(15, 15, 18); MainK.BackgroundTransparency = 1; Instance.new("UICorner", MainK); local strK = Instance.new("UIStroke", MainK); strK.Color = Color3.fromRGB(0, 255, 150); strK.Thickness = 2; strK.Transparency = 1
+local TitleK = Instance.new("TextLabel", MainK); TitleK.Size = UDim2.new(1, 0, 0, 60); TitleK.Text = "JUJU HUB - KEY SYSTEM"; TitleK.TextColor3 = Color3.fromRGB(0, 255, 150); TitleK.Font = "GothamBlack"; TitleK.TextSize = 18; TitleK.BackgroundTransparency = 1; TitleK.TextTransparency = 1
+local Box = Instance.new("TextBox", MainK); Box.Size = UDim2.new(0.85, 0, 0, 45); Box.Position = UDim2.new(0.075, 0, 0.35, 0); Box.PlaceholderText = "INSIRA A KEY..."; Box.Text = ""; Box.BackgroundColor3 = Color3.fromRGB(25, 25, 30); Box.TextColor3 = Color3.new(1, 1, 1); Box.Font = "GothamBold"; Box.TextSize = 14; Box.TextTransparency = 1; Box.BackgroundTransparency = 1; Instance.new("UICorner", Box)
+local Verify = Instance.new("TextButton", MainK); Verify.Size = UDim2.new(0.85, 0, 0, 45); Verify.Position = UDim2.new(0.075, 0, 0.65, 0); Verify.Text = "VERIFICAR"; Verify.BackgroundColor3 = Color3.fromRGB(0, 255, 150); Verify.TextColor3 = Color3.fromRGB(10, 10, 10); Verify.Font = "GothamBlack"; Verify.TextSize = 14; Verify.TextTransparency = 1; Verify.BackgroundTransparency = 1; Instance.new("UICorner", Verify)
 
+-- Tween de Entrada
 local info = TweenInfo.new(0.8, Enum.EasingStyle.Quint)
 TweenService:Create(BG, info, {BackgroundTransparency = 0.3}):Play()
-TweenService:Create(MainKey, info, {BackgroundTransparency = 0}):Play()
-TweenService:Create(StrokeK, info, {Transparency = 0}):Play()
+TweenService:Create(MainK, info, {BackgroundTransparency = 0}):Play()
+TweenService:Create(strK, info, {Transparency = 0}):Play()
 TweenService:Create(TitleK, info, {TextTransparency = 0}):Play()
 TweenService:Create(Box, info, {TextTransparency = 0, BackgroundTransparency = 0}):Play()
 TweenService:Create(Verify, info, {TextTransparency = 0, BackgroundTransparency = 0}):Play()
 
 -------------------------------------------------------------------------
--- SCRIPT PRINCIPAL
+-- SCRIPT PRINCIPAL RESTAURADO
 -------------------------------------------------------------------------
-local function CarregarScriptPrincipal()
-    -- BYPASS
+local function ExecutarHub()
+    -- 1. BYPASS
     local ACtable = {player.PlayerScripts:FindFirstChild("QuitsAntiCheatChecker"), player.PlayerScripts:FindFirstChild("QuitsAntiCheatLocal")}
     for _, v in pairs(ACtable) do if v then v:Destroy() end end
 
-    local RunService = game:GetService("RunService")
-    local Lighting = game:GetService("Lighting")
-    local Camera = workspace.CurrentCamera
     local WallHopEnabled, SpeedEnabled = false, false
     local lastJump = 0
-    local SETTINGS = {JumpHeight = 36, SpeedMult = 1.4, DetectDist = 3.2, FlickAngle = 45, RecoverySpeed = 0.15, FarmPos = CFrame.new(-32.1, 212.6, 111.0)}
+    local Camera = workspace.CurrentCamera
+    local SETTINGS = {
+        JumpHeight = 36, SpeedMult = 1.4, DetectDist = 3.5, FlickAngle = 45,
+        RecoverySpeed = 0.15, FarmPos = CFrame.new(-32.1, 212.6, 111.0)
+    }
 
-    -- Interface do HUB
-    local sg = Instance.new("ScreenGui", player.PlayerGui); sg.Name = "JujuV42"; sg.ResetOnSpawn = false 
-    
-    -- BOTÃO CIRCULAR (Bolinha) - COM DRAG
-    local minBtn = Instance.new("TextButton", sg); minBtn.Size = UDim2.new(0, 45, 0, 45); minBtn.Position = UDim2.new(0.02, 0, 0.1, 0); minBtn.Text = "JP"; minBtn.BackgroundColor3 = Color3.new(0,0,0); minBtn.TextColor3 = Color3.fromRGB(0, 255, 150); minBtn.Font = "GothamBlack"; Instance.new("UICorner", minBtn).CornerRadius = UDim.new(1,0)
-    MakeDraggable(minBtn)
+    -- Funções Wall Hop
+    local function getWallInfo()
+        local char = player.Character; local root = char and char:FindFirstChild("HumanoidRootPart")
+        if not root then return end
+        local params = RaycastParams.new(); params.FilterDescendantsInstances = {char}
+        local dirs = {["F"] = root.CFrame.LookVector, ["L"] = -root.CFrame.RightVector, ["R"] = root.CFrame.RightVector}
+        for side, dir in pairs(dirs) do
+            local res = workspace:Raycast(root.Position, dir * SETTINGS.DetectDist, params)
+            if res and res.Instance and res.Instance.CanCollide then return res.Normal, side end
+        end
+    end
 
-    -- JANELA PRINCIPAL - COM DRAG
-    local main = Instance.new("Frame", sg); main.Size = UDim2.new(0, 190, 0, 250); main.Position = UDim2.new(0.5, -95, 0.3, 0); main.BackgroundColor3 = Color3.fromRGB(15, 15, 18); main.Visible = true; Instance.new("UICorner", main); Instance.new("UIStroke", main).Color = Color3.fromRGB(0, 255, 150)
-    MakeDraggable(main)
+    local function applyProfessionalFlick(root, side)
+        local angle = math.rad(SETTINGS.FlickAngle); if side == "R" then angle = -angle end
+        root.CFrame = root.CFrame * CFrame.Angles(0, angle, 0)
+        task.spawn(function()
+            task.wait(0.05); local start = tick()
+            while tick() - start < SETTINGS.RecoverySpeed do
+                local look = Camera.CFrame.LookVector
+                local targetRotation = CFrame.new(root.Position, root.Position + Vector3.new(look.X, 0, look.Z))
+                root.CFrame = root.CFrame:Lerp(targetRotation, 0.15)
+                RunService.RenderStepped:Wait()
+            end
+        end)
+    end
 
-    -- Funções e Tabs
+    -- Outras Funções
     local function ExecutarRitual()
         local char = player.Character; local root = char and char:FindFirstChild("HumanoidRootPart")
         if root then
@@ -115,6 +134,14 @@ local function CarregarScriptPrincipal()
         end
     end
 
+    -- UI Principal Restaurada
+    local sg = Instance.new("ScreenGui", player.PlayerGui); sg.Name = "JujuV42"; sg.ResetOnSpawn = false 
+    local minBtn = Instance.new("TextButton", sg); minBtn.Size = UDim2.new(0, 45, 0, 45); minBtn.Position = UDim2.new(0.02, 0, 0.1, 0); minBtn.Text = "JP"; minBtn.BackgroundColor3 = Color3.new(0,0,0); minBtn.TextColor3 = Color3.fromRGB(0, 255, 150); minBtn.Font = "GothamBlack"; Instance.new("UICorner", minBtn).CornerRadius = UDim.new(1,0)
+    MakeDraggable(minBtn)
+
+    local main = Instance.new("Frame", sg); main.Size = UDim2.new(0, 190, 0, 250); main.Position = UDim2.new(0.5, -95, 0.3, 0); main.BackgroundColor3 = Color3.fromRGB(15, 15, 18); Instance.new("UICorner", main); Instance.new("UIStroke", main).Color = Color3.fromRGB(0, 255, 150)
+    MakeDraggable(main)
+
     local tabs = {}
     local tabBtns = Instance.new("Frame", main); tabBtns.Size = UDim2.new(1, 0, 0, 30); tabBtns.BackgroundTransparency = 1
     local function CreateTab(name, x)
@@ -129,11 +156,17 @@ local function CarregarScriptPrincipal()
         local b = Instance.new("TextButton", p); b.Size = UDim2.new(0.95, 0, 0, 30); b.Text = t; b.BackgroundColor3 = Color3.fromRGB(25, 25, 30); b.TextColor3 = Color3.new(0.8, 0.8, 0.8); b.Font = "GothamBold"; b.TextSize = 9; Instance.new("UICorner", b); b.MouseButton1Click:Connect(function() cb(b) end)
     end
 
+    -- Populando as Tabs
     Btn(tabs.Barts, "WALL HOP: OFF", function(b) WallHopEnabled = not WallHopEnabled; b.Text = "WALL HOP: "..(WallHopEnabled and "ON" or "OFF") end)
     Btn(tabs.Barts, "SPEED 1.4X", function(b) SpeedEnabled = not SpeedEnabled; b.Text = "SPEED: "..(SpeedEnabled and "ON" or "OFF") end)
     Btn(tabs.Barts, "FARM COIN", function() if player.Character then player.Character.HumanoidRootPart.CFrame = SETTINGS.FarmPos end end)
-    Btn(tabs.Homers, "KILL ALL (0.5s)", function() local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart"); if root then local old = root.CFrame; for _, pl in pairs(Players:GetPlayers()) do if pl ~= player and pl.Character then root.CFrame = pl.Character.HumanoidRootPart.CFrame * CFrame.new(0,0,2); task.wait(0.5) end end; root.CFrame = old end end)
+
+    Btn(tabs.Homers, "KILL ALL (0.5s)", function()
+        local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+        if root then local old = root.CFrame; for _, pl in pairs(Players:GetPlayers()) do if pl ~= player and pl.Character then root.CFrame = pl.Character.HumanoidRootPart.CFrame * CFrame.new(0,0,2); task.wait(0.5) end end; root.CFrame = old end
+    end)
     Btn(tabs.Homers, "RITUAL HOMER", function() ExecutarRitual() end)
+
     Btn(tabs.ESP, "ESP HOMER", function() CreateVisualESP("homer", Color3.new(1,1,0)) end)
     Btn(tabs.ESP, "ESP BART", function() CreateVisualESP("bart", Color3.new(0,1,0)) end)
     Btn(tabs.ESP, "FULL BRIGHT", function() Lighting.Brightness = 2; Lighting.GlobalShadows = false; Lighting.ClockTime = 14 end)
@@ -142,28 +175,40 @@ local function CarregarScriptPrincipal()
 
     minBtn.MouseButton1Click:Connect(function() main.Visible = not main.Visible end)
 
+    -- LOOPS DE FUNCIONAMENTO (Dentro da função de ativação)
+    UserInputService.JumpRequest:Connect(function()
+        if not WallHopEnabled then return end
+        local char = player.Character; local root = char and char:FindFirstChild("HumanoidRootPart"); local hum = char and char:FindFirstChild("Humanoid")
+        if root and hum and (tick() - lastJump > 0.15) then
+            local normal, side = getWallInfo()
+            if normal then 
+                lastJump = tick(); 
+                hum:ChangeState(Enum.HumanoidStateType.Jumping); 
+                root.Velocity = Vector3.new(root.Velocity.X, SETTINGS.JumpHeight, root.Velocity.Z); 
+                applyProfessionalFlick(root, side) 
+            end
+        end
+    end)
+
     RunService.Heartbeat:Connect(function()
         local hum = player.Character and player.Character:FindFirstChild("Humanoid")
         if hum and SpeedEnabled then hum.WalkSpeed = 16 * SETTINGS.SpeedMult end
     end)
 end
 
--- Lógica de Verificação da Key
+-- Verificação da Key
 Verify.MouseButton1Click:Connect(function()
     if Box.Text == "JJHUB2026" then
-        Verify.Text = "ACESSO LIBERADO!"
+        Verify.Text = "ATIVADO!"
         Verify.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-        local fadeOut = TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
-        TweenService:Create(MainKey, fadeOut, {BackgroundTransparency = 1}):Play()
-        TweenService:Create(BG, fadeOut, {BackgroundTransparency = 1}):Play()
-        task.wait(0.6)
+        task.wait(0.5)
         KeyGui:Destroy()
-        CarregarScriptPrincipal()
+        ExecutarHub()
     else
-        Verify.Text = "KEY INVÁLIDA!"
-        Verify.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+        Verify.Text = "KEY INCORRETA"
+        Verify.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
         task.wait(1)
-        Verify.Text = "ATIVAR SCRIPT"
+        Verify.Text = "VERIFICAR"
         Verify.BackgroundColor3 = Color3.fromRGB(0, 255, 150)
     end
 end)
